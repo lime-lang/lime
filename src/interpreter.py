@@ -1,10 +1,16 @@
 from error import RuntimeError
 import decimal
 import fractions
+import operator as op
 
-NUMBER, EXP, PLUS, MINUS, MUL, DIV, LPAREN, RPAREN, EOF, VAR = (
-    "NUMBER", "EXP", "PLUS", "MINUS", "MUL", "DIV", "(", ")", "EOF", "VAR"
-)
+operators = {
+    "PLUS": op.add,
+    "MINUS": op.sub, 
+    "MUL": op.mul,
+    "DIV": op.truediv,
+    "EXP": op.pow,
+    "EQ": op.eq
+}
 
 
 class Interpreter:
@@ -12,18 +18,12 @@ class Interpreter:
         self.parser = parser
 
     def visit_BinaryOperation(self, node):
-        if node.operation.type == PLUS:
-            return self.visit(node.left) + self.visit(node.right)
-        elif node.operation.type == MINUS:
-            return self.visit(node.left) - self.visit(node.right)
-        elif node.operation.type == DIV:
-            return self.visit(node.left) / self.visit(node.right)
-        elif node.operation.type == MUL:
-            return self.visit(node.left) * self.visit(node.right)
-        elif node.operation.type == EXP:
-            return self.visit(node.left) ** self.visit(node.right)
+        return operators[node.operation.type](self.visit(node.left), self.visit(node.right))
 
     def visit_Number(self, node):
+        return node.value
+
+    def visit_Variable(self, node):
         return node.value
 
     def visit(self, node):

@@ -2,10 +2,6 @@ from error import RuntimeError
 import fractions
 
 
-NUMBER, EXP, PLUS, MINUS, MUL, DIV, LPAREN, RPAREN, EOF, VAR = (
-    "NUMBER", "EXP", "PLUS", "MINUS", "MUL", "DIV", "(", ")", "EOF", "VAR"
-)
-
 class AST:
     pass
 
@@ -48,23 +44,23 @@ class Parser:
     def factor(self):
         token = self.current
 
-        if token.type == NUMBER:
-            self.compare(NUMBER)
+        if token.type == "NUMBER":
+            self.compare("NUMBER")
             return Number(token)
-        elif token.type == VAR:
-            self.compare(VAR)
+        elif token.type == "VAR":
+            self.compare("VAR")
             return Variable(token)
-        elif token.type == LPAREN:
-            self.compare(LPAREN)
+        elif token.type == "LPAREN":
+            self.compare("LPAREN")
             node = self.expr()
-            self.compare(RPAREN)
+            self.compare("RPAREN")
 
             return node
 
-    def term(self):
+    def exp(self):
         node = self.factor()
 
-        while self.current.type in (MUL, DIV):
+        while self.current.type == "EXP":
             token = self.current
 
             self.compare(token.type)
@@ -73,15 +69,39 @@ class Parser:
 
         return node
 
+    def term(self):
+        node = self.exp()
+
+        while self.current.type in ("MUL", "DIV"):
+            token = self.current
+
+            self.compare(token.type)
+
+            node = BinaryOperation(node, token, self.exp())
+
+        return node
+
     def expr(self):
         node = self.term()
 
-        while self.current.type in (PLUS, MINUS):
+        while self.current.type in ("PLUS", "MINUS"):
             token = self.current
 
             self.compare(token.type)
 
             node = BinaryOperation(node, token, self.term())
+
+        return node
+
+    def equality(self):
+        node = self.expr()
+
+        while self.current.type in ("EQ"):
+            token = self.current
+
+            self.compare(token.type)
+
+            node = BinaryOperation(node, token, self.expr())
 
         return node
 
@@ -91,7 +111,7 @@ class Parser:
         while self.pos < len(self.lexer):
             self.current = self.current = self.lexer[self.pos]
             
-            ast.append(self.expr())
+            ast.append(self.equality())
 
             self.pos += 1
 

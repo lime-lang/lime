@@ -2,11 +2,6 @@ from error import RuntimeError
 import fractions
 
 
-NUMBER, EXP, PLUS, MINUS, MUL, DIV, LPAREN, RPAREN, EOF, VAR = (
-    "NUMBER", "EXP", "PLUS", "MINUS", "MUL", "DIV", "(", ")", "EOF", "VAR"
-)
-
-
 class Token:
     def __init__(self, type, value):
         self.type = type
@@ -47,62 +42,69 @@ class Lexer:
         multipliable = False
 
         while self.current is not None:
-            if self.current.isdigit():
-                if multipliable:
-                    tokens.append(Token(MUL, "*"))
-                
-                tokens.append(Token(NUMBER, self.number()))
-                multipliable = True
+            if self.current == "^":
+                self.increment()
+                tokens.append(Token("EXP", "^"))
+                multipliable = False
                 continue
 
-            """if self.current == "^":
+            if self.current == "=":
                 self.increment()
-                tokens.append(Token(EXP, "^"))
+                tokens.append(Token("EQ", "="))
                 multipliable = False
-                continue"""
+                continue
 
             if self.current == "+":
                 self.increment()
-                tokens.append(Token(PLUS, "+"))
+                tokens.append(Token("PLUS", "+"))
                 multipliable = False
                 continue
 
             if self.current == "-":
                 self.increment()
-                tokens.append(Token(MINUS, "-"))
+                tokens.append(Token("MINUS", "-"))
                 multipliable = False
                 continue
 
             if self.current == "*":
                 self.increment()
-                tokens.append(Token(MUL, "*"))
+                tokens.append(Token("MUL", "*"))
                 multipliable = False
                 continue
 
             if self.current == "/":
                 self.increment()
-                tokens.append(Token(DIV, "/"))
-                multipliable = False
-                continue
-
-            if self.current == "(":
-                self.increment()
-                tokens.append(Token(LPAREN, "("))
+                tokens.append(Token("DIV", "/"))
                 multipliable = False
                 continue
 
             if self.current == ")":
                 self.increment()
-                tokens.append(Token(RPAREN, ")"))
+                tokens.append(Token("RPAREN", ")"))
                 multipliable = False
                 continue
 
             if multipliable:
-                tokens.append(Token(MUL, "*"))
+                tokens.append(Token("MUL", "*"))
+                
+            if self.current.isdigit():
+                if multipliable:
+                    tokens.append(Token("MUL", "*"))
+                
+                tokens.append(Token("NUMBER", self.number()))
+                multipliable = True
+                continue
 
-            """tokens.append(Token(VAR, self.current))
+            if self.current == "(":
+                self.increment()
+                tokens.append(Token("LPAREN", "("))
+                multipliable = False
+                continue
+
+
+            tokens.append(Token("VAR", self.current))
             multipliable = True
-            self.increment()"""
+            self.increment()
         
-        tokens.append(Token(EOF, None))
+        tokens.append(Token("EOF", None))
         return tokens
