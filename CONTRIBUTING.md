@@ -1,6 +1,6 @@
 # Lime Contribution Guidelines
 
-The Lime Programming Language accepts contribution from anyone, in three of different ways.
+The Lime Programming Language accepts contribution from anyone, in three different ways.
 
 ## Method 1 — Discussions
 
