@@ -18,6 +18,9 @@ class Interpreter:
         self.parser = parser
 
     def visit_BinaryOperation(self, node):
+        return fractions.Fraction(operators[node.operation.type](self.visit(node.left), self.visit(node.right))).limit_denominator(1000000000)
+
+    def visit_Comparison(self, node):
         return operators[node.operation.type](self.visit(node.left), self.visit(node.right))
 
     def visit_Number(self, node):
@@ -30,7 +33,7 @@ class Interpreter:
         method_name = f"visit_{type(node).__name__}"
         visitor = getattr(self, method_name)
 
-        return fractions.Fraction(visitor(node)).limit_denominator(1000000000)
+        return visitor(node)
 
     def interpret(self):
         return self.visit(self.parser[0])

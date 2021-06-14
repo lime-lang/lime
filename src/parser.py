@@ -14,6 +14,14 @@ class BinaryOperation(AST):
         self.right = right
 
 
+class Comparison(AST):
+    def __init__(self, left, operation, right):
+        self.left = left
+        self.token = operation
+        self.operation = operation
+        self.right = right
+
+
 class Number(AST):
     def __init__(self, token):
         self.token = token
@@ -65,7 +73,7 @@ class Parser:
 
             self.compare(token.type)
 
-            node = BinaryOperation(node, token, self.factor())
+            node = BinaryOperation(node, token, self.exp())
 
         return node
 
@@ -101,7 +109,7 @@ class Parser:
 
             self.compare(token.type)
 
-            node = BinaryOperation(node, token, self.expr())
+            node = Comparison(node, token, self.expr())
 
         return node
 
