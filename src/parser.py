@@ -14,7 +14,7 @@ class BinaryOperation(AST):
         self.right = right
 
 
-class Comparison(AST):
+class Equality(AST):
     def __init__(self, left, operation, right):
         self.left = left
         self.token = operation
@@ -109,7 +109,7 @@ class Parser:
 
             self.compare(token.type)
 
-            node = Comparison(node, token, self.expr())
+            node = Equality(node, token, self.expr())
 
         return node
 

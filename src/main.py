@@ -3,10 +3,11 @@ from parser import Parser
 from interpreter import Interpreter
 
 
-lexer = Lexer(input()).lex()
-parser = Parser(lexer).parse()
-interpreter = Interpreter(parser)
-result = interpreter.interpret()
+while True:
+    lexer = Lexer(input("lime > ")).lex()
+    parser = Parser(lexer).parse()
+    interpreter = Interpreter(parser)
+    result = interpreter.interpret()
 
-
-print(result)
+    if result != None:
+        print(result)
